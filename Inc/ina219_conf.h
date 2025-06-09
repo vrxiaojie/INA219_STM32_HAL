@@ -16,6 +16,10 @@
 //#define STM32C0
 
 //--------------------------------------------------
+// 如使用FREERTOS，将值设为1
+#define USE_FREERTOS 1
+
+//--------------------------------------------------
 /*INA219 配置
  *ina219.h中有CONFIG_REG部分，配置1~5用 | 隔开
  */
@@ -41,7 +45,7 @@
  *再记录从INA219得到的测量电流Is
  *则校准系数CALIBRATION_CO=Ir/Is，结果保留5位小数
  */
-#define INA219_CALIBRATION_CO      0.82632
+#define INA219_CALIBRATION_CO      1.00000
 // 校准值
 #define INA219_CALIBRATION_VALUE   (uint16_t)(0.04096/(INA219_CURRENT_LSB*INA219_RS)*INA219_CALIBRATION_CO)
 
