@@ -1,5 +1,6 @@
-#include "ina219.h"
 #include "ina219_conf.h"
+#if ENABLE_INA219 == 1
+#include "ina219.h"
 #if USE_FREERTOS == 1
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -16,7 +17,7 @@ volatile enum {
     INA219_READ_CURRENT,
     INA219_READ_SHUNT_VOLTAGE,
     INA219_READ_POWER
-} INA219_Request = INA219_IDLE;\
+} INA219_Request = INA219_IDLE;
 volatile uint8_t INA219_data[2];
 volatile double INA219_last_result = 0.0;
 
@@ -77,7 +78,7 @@ double INA219_getBusVoltage(void)
     uint8_t data[2];
     HAL_I2C_Mem_Read(&INA219_I2C_PORT, INA219_ADDR, BUS_VOLTAGE_REG, I2C_MEMADD_SIZE_8BIT, data, 2, 100);
     uint16_t rawdata = ((data[0] << 8) | data[1])>> 3;
-    return (double)rawdata * INA219_VOLT_LSB;
+    return (double)rawdata * INA219_BUS_VOLT_LSB;
 }
 
 /**
@@ -102,7 +103,7 @@ double INA219_getShuntVoltage(void)
     uint8_t data[2];
     HAL_I2C_Mem_Read(&INA219_I2C_PORT, INA219_ADDR, SHUNT_VOLTAGE_REG, I2C_MEMADD_SIZE_8BIT, data, 2, 100);
     int16_t rawdata = (int16_t)((data[0] << 8) | data[1]);
-    return (double)rawdata * 0.00001;
+    return (double)rawdata * INA219_SHUNT_VOLT_LSB;
 
 }
 
@@ -186,7 +187,7 @@ double INA219_getBusVoltage_DMA(void)
 #endif
 
     uint16_t rawdata = ((data[0] << 8) | data[1]) >> 3;
-    return (double)rawdata * INA219_VOLT_LSB;
+    return (double)rawdata * INA219_BUS_VOLT_LSB;
 }
 
 /**
@@ -229,7 +230,7 @@ double INA219_getShuntVoltage_DMA(void)
     }
 #endif
     int16_t rawdata = (int16_t)((data[0] << 8) | data[1]);
-    return (double)rawdata * 0.00001;
+    return (double)rawdata * INA219_SHUNT_VOLT_LSB;
 }
 
 /**
@@ -266,7 +267,7 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
             case INA219_READ_BUS_VOLTAGE:
             {
                 uint16_t raw = ((INA219_data[0] << 8) | INA219_data[1]) >> 3;
-                INA219_last_result = (double)raw * INA219_VOLT_LSB;
+                INA219_last_result = (double)raw * INA219_BUS_VOLT_LSB;
                 break;
             }
             case INA219_READ_CURRENT:
@@ -278,7 +279,7 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
             case INA219_READ_SHUNT_VOLTAGE:
             {
                 int16_t raw = (int16_t)((INA219_data[0] << 8) | INA219_data[1]);
-                INA219_last_result = (double)raw * 0.00001;
+                INA219_last_result = (double)raw * INA219_SHUNT_VOLT_LSB;
                 break;
             }
             case INA219_READ_POWER:
@@ -299,3 +300,5 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 #endif
     }
 }
+
+#endif

@@ -1,6 +1,7 @@
 #ifndef INA219_H
 #define INA219_H
 #include "ina219_conf.h"
+#if ENABLE_INA219 == 1
 
 //--------------------------------------------------
 #if defined(STM32WB)
@@ -123,4 +124,5 @@ double INA219_getBusVoltage_DMA(void);
 double INA219_getCurrent_DMA(void);
 double INA219_getShuntVoltage_DMA(void);
 double INA219_getPower_DMA(void);
+#endif
 #endif //INA219_H

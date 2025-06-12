@@ -19,6 +19,9 @@
 // 如使用FREERTOS，将值设为1
 #define USE_FREERTOS 1
 
+// 条件编译，如果要使用INA219驱动，置为1
+#define ENABLE_INA219 1
+
 //--------------------------------------------------
 /*INA219 配置
  *ina219.h中有CONFIG_REG部分，配置1~5用 | 隔开
@@ -28,13 +31,16 @@
 // 在<<1左边写7位I2C地址
 #define INA219_ADDR                 (0x40<<1)
 
-// IN219连接到的I2C端口
+// INA219连接到的I2C端口
 #define INA219_I2C_PORT             hi2c2
 
-// 电压LSB 4mV固定值 单位V
-#define INA219_VOLT_LSB             0.004
+// 母线电压LSB 固定值4mV 单位V
+#define INA219_BUS_VOLT_LSB          0.004
 
-// 电流LSB 单位A
+// 采样电阻电压LSB 固定值10uV 单位V
+#define INA219_SHUNT_VOLT_LSB       0.00001
+
+// 电流LSB 单位A (由 最大期望电流/2^15 得到的)
 #define INA219_CURRENT_LSB          0.00001
 
 // 采样电阻RShunt值，单位ohm
@@ -45,7 +51,7 @@
  *再记录从INA219得到的测量电流Is
  *则校准系数CALIBRATION_CO=Ir/Is，结果保留5位小数
  */
-#define INA219_CALIBRATION_CO      1.00000
+#define INA219_CALIBRATION_CO      0.82632
 // 校准值
 #define INA219_CALIBRATION_VALUE   (uint16_t)(0.04096/(INA219_CURRENT_LSB*INA219_RS)*INA219_CALIBRATION_CO)
 
